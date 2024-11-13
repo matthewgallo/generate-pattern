@@ -1,10 +1,10 @@
-name: Release
+name: Release, dry run
 
 on:
   workflow_dispatch:
 
 jobs:
-  release:
+  release-dry-run:
     permissions:
       contents: write
       issues: write
