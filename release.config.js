@@ -12,6 +12,11 @@ export const config = {
           { type: 'chore', release: 'minor' },
           { type: 'fix', release: 'minor' },
           { type: 'feat', release: 'minor' },
+          { type: 'build', release: 'minor' },
+          { type: 'ci', release: 'minor' },
+          { type: 'perf', release: 'minor' },
+          { type: 'revert', release: 'minor' },
+          { type: 'test', release: 'minor' },
         ],
         parserOpts: {
           noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES'],
