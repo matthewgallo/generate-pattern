@@ -16,8 +16,56 @@
     "tiged": "^2.12.7"
   },
   "devDependencies": {
+    "@commitlint/cli": "^18.0.0",
+    "@commitlint/config-conventional": "^18.0.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.1",
     "@types/node": "^22.9.0",
+    "semantic-release": "^24.2.0",
     "typescript": "^5.6.3"
   },
-  "bin": "./dist/index.js"
+  "bin": "./dist/index.js",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "header-max-length": [
+        2,
+        "always",
+        72
+      ],
+      "body-max-line-length": [
+        2,
+        "always",
+        80
+      ],
+      "scope-case": [
+        0,
+        "always",
+        "lower-case"
+      ],
+      "type-enum": [
+        2,
+        "always",
+        [
+          "build",
+          "ci",
+          "chore",
+          "docs",
+          "feat",
+          "fix",
+          "perf",
+          "refactor",
+          "revert",
+          "test",
+          "style"
+        ]
+      ]
+    }
+  }
 }
