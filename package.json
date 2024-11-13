@@ -9,10 +9,13 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "clean": "rimraf ./dist",
+    "prettier:check": "prettier --check '**/*.{js,ts}'",
+    "prettier:write": "prettier --write '**/*.{js,ts}'"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
   "dependencies": {
     "@inquirer/prompts": "^7.1.0",
@@ -28,6 +31,10 @@
     "@semantic-release/github": "^11.0.1",
     "@semantic-release/release-notes-generator": "^14.0.1",
     "@types/node": "^22.9.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
     "semantic-release": "^24.2.0",
     "typescript": "^5.6.3"
   },
@@ -76,5 +83,16 @@
         ]
       ]
     }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "lint-staged": {
+    "**/*.{js,ts}": [
+      "prettier --cache --write"
+    ]
   }
 }

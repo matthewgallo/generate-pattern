@@ -30,10 +30,12 @@ jobs:
           if [ "${{ github.event.inputs.dry-run }}" == "true"  ]; then
             echo "PUBLISH=--dry-run" >> $GITHUB_ENV
           fi
-      - name: Install
-        run: yarn
-      - run: yarn install --immutable --immutable-cache --check-cache
-      - run: yarn build
+      - name: Fresh install
+        run: yarn install --immutable --immutable-cache --check-cache
+      - name: Clean dist
+        run: yarn clean
+      - name: Build
+        run: yarn build
       - run: npx semantic-release $(echo "${{ env.PUBLISH }}")
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
