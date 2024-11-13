@@ -16,6 +16,7 @@
   "description": "",
   "dependencies": {
     "@inquirer/prompts": "^7.1.0",
+    "cli-table": "^0.3.11",
     "tiged": "^2.12.7"
   },
   "devDependencies": {

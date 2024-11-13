@@ -4,6 +4,17 @@ import tiged from 'tiged';
 import { select, confirm, input } from '@inquirer/prompts';
 import { reactExamples } from './tanstack-react-list.js';
 import { execSync } from 'child_process';
+import Table from 'cli-table';
+
+const table = new Table({
+  head: ['Framework', 'URL'], colWidths: [18, 90]
+  , style : { 'padding-left' : 1}
+});
+
+table.push(
+  ['React', 'https://github.com/carbon-design-system/tanstack-carbon/tree/main/react']
+, ['Web components', 'https://github.com/carbon-design-system/tanstack-carbon/tree/main/web-components']
+);
 
 const runPrompt = async () => {
   const answers = {
@@ -36,17 +47,19 @@ emitter.on('info', info => {
 });
 
 emitter.clone(finalDestination).then(() => {
-  console.log('Installing dependencies 🛠️');
   if (installDeps) {
+    console.log('Installing dependencies 🛠️');
     try {
       // Run a Yarn command (e.g., 'yarn install')
       const output = execSync(`yarn --cwd ${finalDestination} install`, { encoding: 'utf-8' });
       // console.log('Yarn command output:', output);
+      console.log(table.toString());
       console.log('Done, your new pattern is ready! ✨');
     } catch (error) {
       console.error('Error running Yarn command:', error);
     }
   } else {
+    console.log(table.toString());
     console.log('Done, your new pattern is ready! ✨');
   }
 });
