@@ -21,7 +21,6 @@ const finalDestination =
   typeof customPath === 'string' && customPath.length > 0
     ? `${process.cwd()}/${customPath}`
     : process.cwd();
-    console.log('final', finalDestination);
 
 const emitter = tiged(`carbon-design-system/tanstack-carbon/react/${pattern}`, {
 	// disableCache: true,
