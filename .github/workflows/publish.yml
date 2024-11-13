@@ -36,6 +36,8 @@ jobs:
         run: yarn clean
       - name: Build
         run: yarn build
+      - name: Install Semantic Release and plugins
+        run: yarn global add semantic-release @semantic-release/git @semantic-release/changelog @semantic-release/github @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/npm
       - run: npx semantic-release $(echo "${{ env.PUBLISH }}")
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
