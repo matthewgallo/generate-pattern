@@ -45,9 +45,9 @@ const runPrompt = async () => {
   const emitter = tiged(
     `carbon-design-system/tanstack-carbon/react/${pattern}`,
     {
-      // disableCache: true,
-      // force: true,
-      // verbose: true
+      disableCache: true,
+      force: true,
+      verbose: true,
     }
   );
 
