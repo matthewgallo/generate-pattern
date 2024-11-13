@@ -41,13 +41,13 @@ emitter.clone(finalDestination).then(() => {
     try {
       // Run a Yarn command (e.g., 'yarn install')
       const output = execSync(`yarn --cwd ${finalDestination} install`, { encoding: 'utf-8' });
-      console.log('Yarn command output:', output);
-      console.log('Done ✨');
+      // console.log('Yarn command output:', output);
+      console.log('Done, your new pattern is ready! ✨');
     } catch (error) {
       console.error('Error running Yarn command:', error);
     }
   } else {
-    console.log('Done ✨');
+    console.log('Done, your new pattern is ready! ✨');
   }
 });
 }
