@@ -6,9 +6,10 @@ import { reactExamples } from './tanstack-react-list.js';
 import { execSync } from 'child_process';
 import Table from 'cli-table';
 import path from 'path';
+import { readdir } from 'node:fs/promises';
 
 import { parseImports } from 'parse-imports';
-import { readdirSync, readFileSync, existsSync, rmSync } from 'fs';
+import { readFileSync, existsSync, rmSync, lstatSync } from 'fs';
 
 const INLINE = 'Inline';
 const FULL = 'Full Vite template';
@@ -115,8 +116,8 @@ const runPrompt = async () => {
 
   // Compiles ts so that the parse-imports package can parse the example pattern
   // and know which packages will need to be installed later on
-  const readExampleImports = () => {
-    const fileList = readdirSync(finalDestination);
+  const readExampleImports = async () => {
+    const fileList = await readdir(finalDestination, { recursive: true });
     const tsFiles = [];
     const scssFiles = [];
     for (const file of fileList) {
@@ -151,11 +152,14 @@ const runPrompt = async () => {
   // Parses an array of files given a dir and will find all of the
   // packages that are imported in those files
   const readTempJSFileImports = async (tempDir: string) => {
-    const jsFileList = readdirSync(tempDir);
+    const jsFileList = await readdir(tempDir, { recursive: true });
     if (jsFileList.length > 0) {
       const allImports = [];
       await asyncForEach(jsFileList, async (jsFile: string) => {
         const name = `${tempDir}/${jsFile}`;
+        const isDir = lstatSync(name).isDirectory();
+        // We only want files, so if we find a dir we should not do anything
+        if (isDir) return;
         const code = readFileSync(name, 'utf8');
         const imports = [...(await parseImports(code))];
         allImports.push(imports);
