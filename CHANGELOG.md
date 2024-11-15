@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/matthewgallo/generate-pattern/compare/v1.6.0...v1.7.0) (2024-11-15)
+
+
+### Bug Fixes
+
+* update editableCell naming ([3434f00](https://github.com/matthewgallo/generate-pattern/commit/3434f00e1d6067319f7f6b6f96c1728334ba6b79))
+
 # [1.6.0](https://github.com/matthewgallo/generate-pattern/compare/v1.5.0...v1.6.0) (2024-11-15)
 
 
