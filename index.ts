@@ -94,14 +94,16 @@ const runPrompt = async () => {
   };
 
   const buildFullPattern = () => {
+    console.log('Building full pattern 🛠️');
     if (installDeps) {
       console.log('Installing dependencies 🛠️');
       try {
-        // Run a Yarn command (e.g., 'yarn install')
-        const output = execSync(`yarn --cwd ${finalDestination} install`, {
+        execSync(`yarn --cwd ${finalDestination} install`, {
           encoding: 'utf-8',
         });
-        // console.log('Yarn command output:', output);
+        console.log(
+          'Full example pattern created, with dependencies installed ✅'
+        );
         successMessage(type);
       } catch (error) {
         console.error('Error running Yarn command:', error);
@@ -126,8 +128,7 @@ const runPrompt = async () => {
         scssFiles.push(name);
       }
     }
-    // console.log(tsFiles);
-    // console.log(scssFiles);
+
     if (tsFiles.length > 0) {
       tsFiles.forEach((filePath) => {
         execSync(
@@ -171,7 +172,7 @@ const runPrompt = async () => {
       const externalImportList = finalPackages.map(
         (a: { moduleSpecifier: { value: string } }) => a.moduleSpecifier.value
       );
-      console.log(tempDir);
+
       // Delete temp dir
       rmSync(tempDir, { recursive: true, force: true });
       installDependencies(
@@ -194,28 +195,37 @@ const runPrompt = async () => {
     return null;
   };
 
+  const runPackageManagerInstall = (
+    foundPackageLock: string,
+    appDir: string,
+    inlineDepList: string
+  ) => {
+    const npmInstallScript = `npm --prefix ${appDir} install ${inlineDepList}`;
+    const yarnAddScript = `yarn --cwd ${appDir} add ${inlineDepList}`;
+    console.log('Installing dependencies from inline pattern 🪄');
+    // Use NPM if we find a package-lock.json file, otherwise we'll default to yarn
+    execSync(foundPackageLock ? npmInstallScript : yarnAddScript, {
+      encoding: 'utf-8',
+    });
+    console.log('Inline example created, with all necessary dependencies ✅');
+    successMessage(type);
+  };
+
   // This will find where to install dependencies and if it's
   // confirmed that we've found a package.json, we will install
   // the required dependencies
   const installDependencies = (depList: string[]) => {
     // Need to confirm package.json exists in order to install packages
-    // console.log('List of final packages to install: ', depList);
-
     const packageJsonPath = findFileUpParent('package.json', finalDestination);
     if (packageJsonPath) {
       const appDirectory = path.dirname(packageJsonPath);
       const inlineDepList = depList.join(' ');
-      // console.log(inlineDepList);
-      // console.log('install dir: ', appDirectory);
       try {
-        console.log('Installing dependencies from inline pattern 🪄');
-        execSync(`yarn --cwd ${appDirectory} add ${inlineDepList}`, {
-          encoding: 'utf-8',
-        });
-        successMessage(type);
-        console.log(
-          'Inline example created, with all necessary dependencies! ✨'
+        const foundPackageLock = findFileUpParent(
+          'package-lock.json',
+          finalDestination
         );
+        runPackageManagerInstall(foundPackageLock, appDirectory, inlineDepList);
       } catch (error) {
         console.log('Error install inline deps', error);
       }
@@ -232,13 +242,13 @@ const runPrompt = async () => {
 
   const buildInlinePattern = () => {
     // inline pattern generation step chosen
+    console.log('Building inline pattern 🛠️');
     if (installDeps) {
-      console.log('Building inline pattern 🛠️');
       try {
         // find what dependencies to install
         readExampleImports();
       } catch (error) {
-        console.error('Error installing dependencies', error);
+        console.error('Error installing dependencies 🚫', error);
       }
     } else {
       successMessage(type);
