@@ -1,3 +1,5 @@
+# [1.8.0](https://github.com/matthewgallo/generate-pattern/compare/v1.7.0...v1.8.0) (2024-11-15)
+
 # [1.7.0](https://github.com/matthewgallo/generate-pattern/compare/v1.6.0...v1.7.0) (2024-11-15)
 
 
