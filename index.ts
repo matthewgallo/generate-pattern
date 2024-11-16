@@ -62,15 +62,15 @@ const runPrompt = async () => {
 
   const { pattern, customPath, installDeps, type } = answers;
 
+  const { url } = reactExamples.find((e) => e.value === pattern);
+
   const finalDestination =
     typeof customPath === 'string' && customPath.length > 0
       ? `${process.cwd()}/${customPath}`
       : process.cwd();
 
-  const finalSource =
-    type !== INLINE
-      ? `carbon-design-system/tanstack-carbon/react/${pattern}`
-      : `carbon-design-system/tanstack-carbon/react/${pattern}/src/Example`; // Assumes every example pattern has a Example dir inside src which is currently only true for react/ai-label
+  // Requires that every example pattern has an Example dir inside src
+  const finalSource = type !== INLINE ? url : `${url}/src/Example`;
 
   const emitter = tiged(finalSource, {
     disableCache: true,
@@ -119,15 +119,32 @@ const runPrompt = async () => {
   const readExampleImports = async () => {
     const fileList = await readdir(finalDestination, { recursive: true });
     const tsFiles = [];
+    const jsFiles = [];
     const scssFiles = [];
     for (const file of fileList) {
       const name = `${finalDestination}/${file}`;
       if (path.extname(name) === '.tsx' || path.extname(name) === '.ts') {
         tsFiles.push(name);
       }
+      if (path.extname(name) === '.jsx' || path.extname(name) === '.js') {
+        jsFiles.push(name);
+      }
       if (path.extname(name) === '.scss') {
         scssFiles.push(name);
       }
+    }
+
+    if (jsFiles.length > 0) {
+      console.log(jsFiles);
+      jsFiles.forEach((filePath) => {
+        execSync(
+          `npx tsc --jsx react --noCheck ${filePath} --outDir ${finalDestination}/temp --target esnext --module esnext --allowJs`,
+          {
+            encoding: 'utf-8',
+          }
+        );
+      });
+      return readTempJSFileImports(`${finalDestination}/temp`);
     }
 
     if (tsFiles.length > 0) {
@@ -139,7 +156,7 @@ const runPrompt = async () => {
           }
         );
       });
-      readTempJSFileImports(`${finalDestination}/temp`);
+      return readTempJSFileImports(`${finalDestination}/temp`);
     }
   };
 
