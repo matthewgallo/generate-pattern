@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/matthewgallo/generate-pattern/compare/v1.8.0...v1.9.0) (2024-11-16)
+
+
+### Features
+
+* support both js and ts patterns ([484278e](https://github.com/matthewgallo/generate-pattern/commit/484278efb9e9df729fe76134f66f22993f630e9c))
+
 # [1.8.0](https://github.com/matthewgallo/generate-pattern/compare/v1.7.0...v1.8.0) (2024-11-15)
 
 # [1.7.0](https://github.com/matthewgallo/generate-pattern/compare/v1.6.0...v1.7.0) (2024-11-15)
