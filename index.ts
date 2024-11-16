@@ -7,9 +7,10 @@ import { execSync } from 'child_process';
 import Table from 'cli-table';
 import path from 'path';
 import { readdir } from 'node:fs/promises';
+import { existsSync } from 'fs';
+import { builtinModules } from 'module';
 
-import { parseImports } from 'parse-imports';
-import { readFileSync, existsSync, rmSync, lstatSync } from 'fs';
+import ts from 'typescript';
 
 const INLINE = 'Inline';
 const FULL = 'Full Vite template';
@@ -118,86 +119,38 @@ const runPrompt = async () => {
   // and know which packages will need to be installed later on
   const readExampleImports = async () => {
     const fileList = await readdir(finalDestination, { recursive: true });
-    const tsFiles = [];
-    const jsFiles = [];
-    const scssFiles = [];
+    const allJSAndTSFiles = [];
+    const styleFiles = [];
     for (const file of fileList) {
       const name = `${finalDestination}/${file}`;
-      if (path.extname(name) === '.tsx' || path.extname(name) === '.ts') {
-        tsFiles.push(name);
+      if (
+        path.extname(name) === '.tsx' ||
+        path.extname(name) === '.ts' ||
+        path.extname(name) === '.jsx' ||
+        path.extname(name) === '.js'
+      ) {
+        allJSAndTSFiles.push(name);
       }
-      if (path.extname(name) === '.jsx' || path.extname(name) === '.js') {
-        jsFiles.push(name);
-      }
-      if (path.extname(name) === '.scss') {
-        scssFiles.push(name);
+      if (path.extname(name) === '.scss' || path.extname(name) === '.css') {
+        styleFiles.push(name);
       }
     }
 
-    if (jsFiles.length > 0) {
-      console.log(jsFiles);
-      jsFiles.forEach((filePath) => {
-        execSync(
-          `npx tsc --jsx react --noCheck ${filePath} --outDir ${finalDestination}/temp --target esnext --module esnext --allowJs`,
-          {
-            encoding: 'utf-8',
-          }
-        );
+    if (allJSAndTSFiles.length > 0) {
+      const foundExternalPackages = [];
+      allJSAndTSFiles.forEach((filePath) => {
+        const fileImports = getImports(filePath);
+        if (fileImports.length > 0) {
+          fileImports.map((i) => {
+            if (isExternalImport(filePath, i)) {
+              foundExternalPackages.push(i);
+            }
+          });
+        }
       });
-      return readTempJSFileImports(`${finalDestination}/temp`);
-    }
-
-    if (tsFiles.length > 0) {
-      tsFiles.forEach((filePath) => {
-        execSync(
-          `npx tsc --jsx react --noCheck ${filePath} --outDir ${finalDestination}/temp --target esnext --module esnext`,
-          {
-            encoding: 'utf-8',
-          }
-        );
-      });
-      return readTempJSFileImports(`${finalDestination}/temp`);
-    }
-  };
-
-  async function asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-      await callback(array[index], index, array);
-    }
-  }
-
-  // Parses an array of files given a dir and will find all of the
-  // packages that are imported in those files
-  const readTempJSFileImports = async (tempDir: string) => {
-    const jsFileList = await readdir(tempDir, { recursive: true });
-    if (jsFileList.length > 0) {
-      const allImports = [];
-      await asyncForEach(jsFileList, async (jsFile: string) => {
-        const name = `${tempDir}/${jsFile}`;
-        const isDir = lstatSync(name).isDirectory();
-        // We only want files, so if we find a dir we should not do anything
-        if (isDir) return;
-        const code = readFileSync(name, 'utf8');
-        const imports = [...(await parseImports(code))];
-        allImports.push(imports);
-      });
-
-      const flattenedImports = allImports.flat();
-      const externalImports = flattenedImports.filter(
-        (i) => i.moduleSpecifier.type === 'package'
-      );
-      const finalPackages = removeDuplicatesFromArr(
-        externalImports,
-        (i) => i.moduleSpecifier.value
-      );
-      const externalImportList = finalPackages.map(
-        (a: { moduleSpecifier: { value: string } }) => a.moduleSpecifier.value
-      );
-
-      // Delete temp dir
-      rmSync(tempDir, { recursive: true, force: true });
-      installDependencies(
-        externalImportList.filter((d) => d !== '@carbon/react/icons')
+      const uniquePackages = [...new Set(foundExternalPackages)];
+      return installDependencies(
+        uniquePackages.filter((d) => d !== '@carbon/react/icons')
       );
     }
   };
@@ -286,3 +239,70 @@ const runPrompt = async () => {
 };
 
 runPrompt();
+
+const tsHost = ts.createCompilerHost(
+  {
+    allowJs: true,
+    noEmit: true,
+    isolatedModules: true,
+    resolveJsonModule: false,
+    moduleResolution: ts.ModuleResolutionKind.Classic, // we don't want node_modules
+    incremental: true,
+    noLib: true,
+    noResolve: true,
+  },
+  true
+);
+
+// Returns array of imports for a given file path
+const getImports = (fileName: string): string[] => {
+  const sourceFile = tsHost.getSourceFile(
+    fileName,
+    ts.ScriptTarget.Latest,
+    (msg) => {
+      throw new Error(`Failed to parse ${fileName}: ${msg}`);
+    }
+  );
+  if (!sourceFile) throw ReferenceError(`Failed to find file ${fileName}`);
+  const importing: string[] = [];
+  delintNode(sourceFile);
+  return importing;
+
+  function delintNode(node: ts.Node) {
+    if (ts.isImportDeclaration(node)) {
+      const moduleName = node.moduleSpecifier.getText().replace(/['"]/g, '');
+      if (
+        !moduleName.startsWith('node:') &&
+        !builtinModules.includes(moduleName)
+      )
+        importing.push(moduleName);
+    } else ts.forEachChild(node, delintNode);
+  }
+};
+
+// Returns true if a given import is external
+const isExternalImport = (fileName: string, importPath: string): boolean => {
+  const program = ts.createProgram([fileName], {}, tsHost);
+  const sourceFile = program.getSourceFile(fileName);
+  if (sourceFile) {
+    const importDeclaration = sourceFile.statements.find((node) => {
+      return (
+        ts.isImportDeclaration(node) &&
+        node.moduleSpecifier.getText() === `'${importPath}'`
+      );
+    });
+
+    if (importDeclaration) {
+      const resolvedModule = ts.resolveModuleName(
+        importPath,
+        fileName,
+        program.getCompilerOptions(),
+        ts.sys
+      );
+
+      return resolvedModule.resolvedModule?.isExternalLibraryImport ?? false;
+    }
+  }
+
+  return false;
+};
