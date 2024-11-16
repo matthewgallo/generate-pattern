@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/matthewgallo/generate-pattern/compare/v1.9.0...v1.10.0) (2024-11-16)
+
+
+### Features
+
+* use ts compiler to analyze imports ([db6642a](https://github.com/matthewgallo/generate-pattern/commit/db6642a8fde73ec135bf14cccede7808a4ce069e))
+
 # [1.9.0](https://github.com/matthewgallo/generate-pattern/compare/v1.8.0...v1.9.0) (2024-11-16)
 
 
