@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/matthewgallo/generate-pattern/compare/v1.10.0...v1.11.0) (2024-11-18)
+
+
+### Bug Fixes
+
+* add ts to dep from dev dep ([2e98116](https://github.com/matthewgallo/generate-pattern/commit/2e98116206df6725f39f99fa568cd2c3e6a601e4))
+
 # [1.10.0](https://github.com/matthewgallo/generate-pattern/compare/v1.9.0...v1.10.0) (2024-11-16)
 
 
