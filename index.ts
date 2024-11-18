@@ -115,8 +115,8 @@ const runPrompt = async () => {
     }
   };
 
-  // Compiles ts so that the parse-imports package can parse the example pattern
-  // and know which packages will need to be installed later on
+  // Collects all js/ts files and checks all of their imports
+  // and gets only the external packages
   const readExampleImports = async () => {
     const fileList = await readdir(finalDestination, { recursive: true });
     const allJSAndTSFiles = [];
@@ -138,10 +138,12 @@ const runPrompt = async () => {
 
     if (allJSAndTSFiles.length > 0) {
       const foundExternalPackages = [];
+      // Gets imports for each js/ts file
       allJSAndTSFiles.forEach((filePath) => {
         const fileImports = getImports(filePath);
         if (fileImports.length > 0) {
           fileImports.map((i) => {
+            // Checks if import is from an external package
             if (isExternalImport(filePath, i)) {
               foundExternalPackages.push(i);
             }
@@ -209,10 +211,6 @@ const runPrompt = async () => {
       );
     }
   };
-
-  const removeDuplicatesFromArr = (data, key) => [
-    ...new Map(data.map((x) => [key(x), x])).values(),
-  ];
 
   const buildInlinePattern = () => {
     // inline pattern generation step chosen
