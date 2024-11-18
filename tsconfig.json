@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
-    "module": "esnext",
+    "module": "ESNext",
     "esModuleInterop": true,
     "target": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "rootDir": "src"
   },
   "lib": ["es2015"],
-  "files": [
-    "index.ts"
-  ],
-  "include": ["typings.d.ts"],
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", ".vscode"]
 }

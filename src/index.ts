@@ -7,8 +7,9 @@ import { execSync } from 'child_process';
 import Table from 'cli-table';
 import path from 'path';
 import { readdir } from 'node:fs/promises';
-import { existsSync } from 'fs';
-import { builtinModules } from 'module';
+import { isExternalImport } from './utils/isExternalImport.js';
+import { getImports } from './utils/getImports.js';
+import { findFileUpParent } from './utils/findFileUpParent.js';
 
 import ts from 'typescript';
 
@@ -30,6 +31,20 @@ table.push(
     'Web components',
     'https://github.com/carbon-design-system/tanstack-carbon/tree/main/web-components',
   ]
+);
+
+const tsHost = ts.createCompilerHost(
+  {
+    allowJs: true,
+    noEmit: true,
+    isolatedModules: true,
+    resolveJsonModule: false,
+    moduleResolution: ts.ModuleResolutionKind.Classic, // we don't want node_modules
+    incremental: true,
+    noLib: true,
+    noResolve: true,
+  },
+  true
 );
 
 const runPrompt = async () => {
@@ -63,7 +78,7 @@ const runPrompt = async () => {
 
   const { pattern, customPath, installDeps, type } = answers;
 
-  const { url } = reactExamples.find((e) => e.value === pattern);
+  const { url } = reactExamples.find((e) => e.value === pattern)!;
 
   const finalDestination =
     typeof customPath === 'string' && customPath.length > 0
@@ -119,8 +134,8 @@ const runPrompt = async () => {
   // and gets only the external packages
   const readExampleImports = async () => {
     const fileList = await readdir(finalDestination, { recursive: true });
-    const allJSAndTSFiles = [];
-    const styleFiles = [];
+    const allJSAndTSFiles = [] as string[];
+    const styleFiles = [] as string[];
     for (const file of fileList) {
       const name = `${finalDestination}/${file}`;
       if (
@@ -137,14 +152,14 @@ const runPrompt = async () => {
     }
 
     if (allJSAndTSFiles.length > 0) {
-      const foundExternalPackages = [];
+      const foundExternalPackages = [] as string[];
       // Gets imports for each js/ts file
       allJSAndTSFiles.forEach((filePath) => {
-        const fileImports = getImports(filePath);
+        const fileImports = getImports(filePath, tsHost);
         if (fileImports.length > 0) {
           fileImports.map((i) => {
             // Checks if import is from an external package
-            if (isExternalImport(filePath, i)) {
+            if (isExternalImport(filePath, i, tsHost)) {
               foundExternalPackages.push(i);
             }
           });
@@ -155,20 +170,6 @@ const runPrompt = async () => {
         uniquePackages.filter((d) => d !== '@carbon/react/icons')
       );
     }
-  };
-
-  // Recursively looks for a given file, going up directories until it is found or not
-  // Used here to find a package.json to confirm where to install dependencies
-  const findFileUpParent = (filename: string, startDir: string) => {
-    let currentDir = startDir || process.cwd();
-    while (currentDir !== path.parse(currentDir).root) {
-      const filePath = path.join(currentDir, filename);
-      if (existsSync(filePath)) {
-        return filePath;
-      }
-      currentDir = path.dirname(currentDir);
-    }
-    return null;
   };
 
   const runPackageManagerInstall = (
@@ -237,70 +238,3 @@ const runPrompt = async () => {
 };
 
 runPrompt();
-
-const tsHost = ts.createCompilerHost(
-  {
-    allowJs: true,
-    noEmit: true,
-    isolatedModules: true,
-    resolveJsonModule: false,
-    moduleResolution: ts.ModuleResolutionKind.Classic, // we don't want node_modules
-    incremental: true,
-    noLib: true,
-    noResolve: true,
-  },
-  true
-);
-
-// Returns array of imports for a given file path
-const getImports = (fileName: string): string[] => {
-  const sourceFile = tsHost.getSourceFile(
-    fileName,
-    ts.ScriptTarget.Latest,
-    (msg) => {
-      throw new Error(`Failed to parse ${fileName}: ${msg}`);
-    }
-  );
-  if (!sourceFile) throw ReferenceError(`Failed to find file ${fileName}`);
-  const importing: string[] = [];
-  delintNode(sourceFile);
-  return importing;
-
-  function delintNode(node: ts.Node) {
-    if (ts.isImportDeclaration(node)) {
-      const moduleName = node.moduleSpecifier.getText().replace(/['"]/g, '');
-      if (
-        !moduleName.startsWith('node:') &&
-        !builtinModules.includes(moduleName)
-      )
-        importing.push(moduleName);
-    } else ts.forEachChild(node, delintNode);
-  }
-};
-
-// Returns true if a given import is external
-const isExternalImport = (fileName: string, importPath: string): boolean => {
-  const program = ts.createProgram([fileName], {}, tsHost);
-  const sourceFile = program.getSourceFile(fileName);
-  if (sourceFile) {
-    const importDeclaration = sourceFile.statements.find((node) => {
-      return (
-        ts.isImportDeclaration(node) &&
-        node.moduleSpecifier.getText() === `'${importPath}'`
-      );
-    });
-
-    if (importDeclaration) {
-      const resolvedModule = ts.resolveModuleName(
-        importPath,
-        fileName,
-        program.getCompilerOptions(),
-        ts.sys
-      );
-
-      return resolvedModule.resolvedModule?.isExternalLibraryImport ?? false;
-    }
-  }
-
-  return false;
-};
