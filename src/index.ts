@@ -4,7 +4,6 @@ import tiged from 'tiged';
 import { select, confirm, input } from '@inquirer/prompts';
 import { reactExamples } from './tanstack-react-list.js';
 import { execSync } from 'child_process';
-import Table from 'cli-table';
 import path from 'path';
 import { readdir } from 'node:fs/promises';
 import { isExternalImport } from './utils/isExternalImport.js';
@@ -15,23 +14,6 @@ import ts from 'typescript';
 
 const INLINE = 'Inline';
 const FULL = 'Full Vite template';
-
-const table = new Table({
-  head: ['Framework', 'URL'],
-  colWidths: [18, 90],
-  style: { 'padding-left': 1 },
-});
-
-table.push(
-  [
-    'React',
-    'https://github.com/carbon-design-system/tanstack-carbon/tree/main/react',
-  ],
-  [
-    'Web components',
-    'https://github.com/carbon-design-system/tanstack-carbon/tree/main/web-components',
-  ]
-);
 
 const tsHost = ts.createCompilerHost(
   {
@@ -102,7 +84,6 @@ const runPrompt = async () => {
   });
 
   const successMessage = (type) => {
-    console.log(table.toString());
     console.log(
       type === INLINE
         ? `Done, your new inline pattern is ready! ✨`
@@ -133,6 +114,7 @@ const runPrompt = async () => {
   // Collects all js/ts files and checks all of their imports
   // and gets only the external packages
   const readExampleImports = async () => {
+    console.log('Finding dependencies to install 🔎');
     const fileList = await readdir(finalDestination, { recursive: true });
     const allJSAndTSFiles = [] as string[];
     const styleFiles = [] as string[];
