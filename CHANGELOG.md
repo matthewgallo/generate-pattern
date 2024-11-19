@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/matthewgallo/generate-pattern/compare/v1.13.0...v1.14.0) (2024-11-19)
+
+
+### Bug Fixes
+
+* add support back for js|jsx files ([1c8c157](https://github.com/matthewgallo/generate-pattern/commit/1c8c1577cfb1691c5fdd269db6abfd84a33031a7))
+
 # [1.13.0](https://github.com/matthewgallo/generate-pattern/compare/v1.12.0...v1.13.0) (2024-11-19)
 
 
