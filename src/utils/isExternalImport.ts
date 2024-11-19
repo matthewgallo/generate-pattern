@@ -3,13 +3,13 @@ import ts from 'typescript';
 // TS compiler is not able to resolve the `motion` package
 // so this is a work-around so that we can be sure to flag
 // it as an external package that we need to install
-const externalList = ['motion'];
+const unresolvableList = ['motion'];
 
 // Returns true if a given import is external
 export const isExternalImport = (
   fileName: string,
   importPath: string,
-  tsHost
+  tsHost: ts.CompilerHost
 ): boolean => {
   const program = ts.createProgram([fileName], {}, tsHost);
   const sourceFile = program.getSourceFile(fileName);
@@ -31,7 +31,7 @@ export const isExternalImport = (
 
       return (
         (result.resolvedModule?.isExternalLibraryImport ||
-          externalList.includes(importPath)) ??
+          unresolvableList.includes(importPath)) ??
         false
       );
     }

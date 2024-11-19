@@ -19,6 +19,7 @@
   "description": "",
   "dependencies": {
     "@inquirer/prompts": "^7.1.0",
+    "parse-imports": "^2.2.1",
     "tiged": "^2.12.7",
     "typescript": "^5.6.3"
   },

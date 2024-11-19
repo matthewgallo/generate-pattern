@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
+import ts from 'typescript';
 import tiged from 'tiged';
 import { select, confirm, input } from '@inquirer/prompts';
-import { reactExamples } from './tanstack-react-list.js';
 import { execSync } from 'child_process';
-import path from 'path';
 import { readdir } from 'node:fs/promises';
+import path from 'path';
+
 import { isExternalImport } from './utils/isExternalImport.js';
 import { getImports } from './utils/getImports.js';
-import { findFileUpParent } from './utils/findFileUpParent.js';
-
-import ts from 'typescript';
-
-const INLINE = 'Inline';
-const FULL = 'Full Vite template';
+import { reactExamples } from './tanstack-react-list.js';
+import { installDependencies } from './utils/installDependencies.js';
+import { INLINE, FULL } from './constants.js';
+import { successMessage } from './utils/successMessage.js';
+import { readTempJSFileImports } from './utils/readTempJSFileImports.js';
 
 const tsHost = ts.createCompilerHost(
   {
@@ -83,14 +83,6 @@ const runPrompt = async () => {
     // console.log('***************************************************************');
   });
 
-  const successMessage = (type) => {
-    console.log(
-      type === INLINE
-        ? `Done, your new inline pattern is ready! ✨`
-        : `Done, your new pattern, example app is ready! ✨`
-    );
-  };
-
   const buildFullPattern = () => {
     console.log('Building full pattern 🛠️');
     if (installDeps) {
@@ -116,27 +108,45 @@ const runPrompt = async () => {
   const readExampleImports = async () => {
     console.log('Finding dependencies to install 🔎');
     const fileList = await readdir(finalDestination, { recursive: true });
-    const allJSAndTSFiles = [] as string[];
+    const tsFiles = [];
+    const jsFiles = [];
+    const allImports = [];
+    // const allJSAndTSFiles = [] as string[];
     const styleFiles = [] as string[];
     for (const file of fileList) {
       const name = `${finalDestination}/${file}`;
-      if (
-        path.extname(name) === '.tsx' ||
-        path.extname(name) === '.ts' ||
-        path.extname(name) === '.jsx' ||
-        path.extname(name) === '.js'
-      ) {
-        allJSAndTSFiles.push(name);
+      if (path.extname(name) === '.tsx' || path.extname(name) === '.ts') {
+        tsFiles.push(name);
+      }
+      if (path.extname(name) === '.jsx' || path.extname(name) === '.js') {
+        jsFiles.push(name);
       }
       if (path.extname(name) === '.scss' || path.extname(name) === '.css') {
         styleFiles.push(name);
       }
     }
 
-    if (allJSAndTSFiles.length > 0) {
+    if (jsFiles.length > 0) {
+      jsFiles.forEach((filePath) => {
+        execSync(
+          `npx tsc --jsx react --noCheck ${filePath} --outDir ${finalDestination}/temp --target esnext --module esnext --allowJs`,
+          {
+            encoding: 'utf-8',
+          }
+        );
+      });
+      const importsFromJsFiles = await readTempJSFileImports(
+        `${finalDestination}/temp`,
+        finalDestination,
+        type
+      );
+      allImports.push(importsFromJsFiles);
+    }
+
+    if (tsFiles.length > 0) {
       const foundExternalPackages = [] as string[];
       // Gets imports for each js/ts file
-      allJSAndTSFiles.forEach((filePath) => {
+      tsFiles.forEach((filePath) => {
         const fileImports = getImports(filePath, tsHost);
         if (fileImports.length > 0) {
           fileImports.map((i) => {
@@ -147,52 +157,12 @@ const runPrompt = async () => {
           });
         }
       });
-      const uniquePackages = [...new Set(foundExternalPackages)];
-      return installDependencies(
-        uniquePackages.filter((d) => d !== '@carbon/react/icons')
+      const uniquePackages = [...new Set(foundExternalPackages)].filter(
+        (d) => d !== '@carbon/react/icons'
       );
+      allImports.push(uniquePackages);
     }
-  };
-
-  const runPackageManagerInstall = (
-    foundPackageLock: string,
-    appDir: string,
-    inlineDepList: string
-  ) => {
-    const npmInstallScript = `npm --prefix ${appDir} install ${inlineDepList}`;
-    const yarnAddScript = `yarn --cwd ${appDir} add ${inlineDepList}`;
-    console.log('Installing dependencies from inline pattern 🪄');
-    // Use NPM if we find a package-lock.json file, otherwise we'll default to yarn
-    execSync(foundPackageLock ? npmInstallScript : yarnAddScript, {
-      encoding: 'utf-8',
-    });
-    console.log('Inline example created, with all necessary dependencies ✅');
-    successMessage(type);
-  };
-
-  // This will find where to install dependencies and if it's
-  // confirmed that we've found a package.json, we will install
-  // the required dependencies
-  const installDependencies = (depList: string[]) => {
-    // Need to confirm package.json exists in order to install packages
-    const packageJsonPath = findFileUpParent('package.json', finalDestination);
-    if (packageJsonPath) {
-      const appDirectory = path.dirname(packageJsonPath);
-      const inlineDepList = depList.join(' ');
-      try {
-        const foundPackageLock = findFileUpParent(
-          'package-lock.json',
-          finalDestination
-        );
-        runPackageManagerInstall(foundPackageLock, appDirectory, inlineDepList);
-      } catch (error) {
-        console.log('Error install inline deps', error);
-      }
-    } else {
-      console.log(
-        'Could not find a package.json file. Skipping dependency install. 🚫'
-      );
-    }
+    return installDependencies(allImports, finalDestination, type);
   };
 
   const buildInlinePattern = () => {
