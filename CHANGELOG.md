@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/matthewgallo/generate-pattern/compare/v1.12.0...v1.13.0) (2024-11-19)
+
+
+### Bug Fixes
+
+* manually add motion package if found as an import ([f6859ad](https://github.com/matthewgallo/generate-pattern/commit/f6859ade3117e43e5a7385de900a1f2942c13664))
+
 # [1.12.0](https://github.com/matthewgallo/generate-pattern/compare/v1.11.0...v1.12.0) (2024-11-18)
 
 # [1.11.0](https://github.com/matthewgallo/generate-pattern/compare/v1.10.0...v1.11.0) (2024-11-18)
