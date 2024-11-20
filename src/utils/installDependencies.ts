@@ -2,14 +2,14 @@
 // confirmed that we've found a package.json, we will install
 
 import path from 'path';
-import { findFileUpParent } from './findFileUpParent.js';
-import { runPackageManagerInstall } from './runPackageManagerInstall.js';
+import { findFileUpParent } from './findFileUpParent';
+import { runPackageManagerInstall } from './runPackageManagerInstall';
 
 // the required dependencies
 export const installDependencies = (
   depList: string[],
   finalDestination: string,
-  type
+  type: string
 ) => {
   // Need to confirm package.json exists in order to install packages
   const packageJsonPath = findFileUpParent('package.json', finalDestination);

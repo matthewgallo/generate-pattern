@@ -1,4 +1,4 @@
-import { INLINE } from '../constants.js';
+import { INLINE } from '../constants';
 
 export const successMessage = (type: string) => {
   console.log(

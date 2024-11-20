@@ -1,5 +1,5 @@
 import { execSync } from 'child_process';
-import { successMessage } from './successMessage.js';
+import { successMessage } from './successMessage';
 
 export const runPackageManagerInstall = (
   foundPackageLock: string,

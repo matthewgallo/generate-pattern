@@ -14,11 +14,7 @@ const removeDuplicatesFromArr = (data, key) => [
 
 // Parses an array of files given a dir and will find all of the
 // packages that are imported in those files
-export const readTempJSFileImports = async (
-  tempDir: string,
-  finalDestination: string,
-  type: string
-) => {
+export const readTempJSFileImports = async (tempDir: string) => {
   const jsFileList = await readdir(tempDir, { recursive: true });
   if (jsFileList.length > 0) {
     const allImports = [];

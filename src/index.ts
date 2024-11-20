@@ -7,13 +7,13 @@ import { execSync } from 'child_process';
 import { readdir } from 'node:fs/promises';
 import path from 'path';
 
-import { isExternalImport } from './utils/isExternalImport.js';
-import { getImports } from './utils/getImports.js';
-import { reactExamples } from './tanstack-react-list.js';
-import { installDependencies } from './utils/installDependencies.js';
-import { INLINE, FULL } from './constants.js';
-import { successMessage } from './utils/successMessage.js';
-import { readTempJSFileImports } from './utils/readTempJSFileImports.js';
+import { isExternalImport } from './utils/isExternalImport';
+import { getImports } from './utils/getImports';
+import { reactExamples } from './tanstack-react-list';
+import { installDependencies } from './utils/installDependencies';
+import { INLINE, FULL } from './constants';
+import { successMessage } from './utils/successMessage';
+import { readTempJSFileImports } from './utils/readTempJSFileImports';
 
 const tsHost = ts.createCompilerHost(
   {
@@ -136,9 +136,7 @@ const runPrompt = async () => {
         );
       });
       const importsFromJsFiles = await readTempJSFileImports(
-        `${finalDestination}/temp`,
-        finalDestination,
-        type
+        `${finalDestination}/temp`
       );
       allImports.push(importsFromJsFiles);
     }
