@@ -160,7 +160,7 @@ const runPrompt = async () => {
       );
       allImports.push(uniquePackages);
     }
-    return installDependencies(allImports, finalDestination, type);
+    return installDependencies(allImports.flat(), finalDestination, type);
   };
 
   const buildInlinePattern = () => {

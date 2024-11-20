@@ -7,10 +7,9 @@ export const runPackageManagerInstall = (
   inlineDepList: string,
   type: string
 ) => {
-  const cleanedList = inlineDepList.replaceAll(',', ' ');
-  const npmInstallScript = `npm --prefix ${appDir} install ${cleanedList}`;
-  const yarnAddScript = `yarn --cwd ${appDir} add ${cleanedList}`;
-  if (cleanedList && cleanedList.length) {
+  const npmInstallScript = `npm --prefix ${appDir} install ${inlineDepList}`;
+  const yarnAddScript = `yarn --cwd ${appDir} add ${inlineDepList}`;
+  if (typeof inlineDepList === 'string' && inlineDepList.length) {
     console.log('Installing dependencies from inline pattern 🪄');
     // Use NPM if we find a package-lock.json file, otherwise we'll default to yarn
     execSync(foundPackageLock ? npmInstallScript : yarnAddScript, {
