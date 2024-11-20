@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/matthewgallo/generate-pattern/compare/v1.15.0...v1.16.0) (2024-11-20)
+
+
+### Bug Fixes
+
+* address issue with nested arr of dependencies ([94f3eeb](https://github.com/matthewgallo/generate-pattern/commit/94f3eeb9bc3f0d392da112df66471f601d590b83))
+
 # [1.15.0](https://github.com/matthewgallo/generate-pattern/compare/v1.14.0...v1.15.0) (2024-11-20)
 
 # [1.14.0](https://github.com/matthewgallo/generate-pattern/compare/v1.13.0...v1.14.0) (2024-11-19)
