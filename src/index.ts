@@ -8,15 +8,31 @@ import path from 'path';
 
 import { reactExamples } from './tanstack-react-list';
 import { installDependencies } from './utils/installDependencies';
-import { INLINE, FULL } from './constants';
+import { INLINE, FULL, DATA_TABLE, TEARSHEET } from './constants';
 import { successMessage } from './utils/successMessage';
 import { readTempJSFileImports } from './utils/readTempJSFileImports';
+import { tearsheetPatterns } from './tearsheet-patterns';
 
 const runPrompt = async () => {
+  const patternType = await select({
+    message: 'Select a type of pattern',
+    choices: [
+      {
+        name: DATA_TABLE,
+        value: DATA_TABLE,
+        description: 'Choose from a variety of different data table extensions',
+      },
+      {
+        name: TEARSHEET,
+        value: TEARSHEET,
+        description: 'Choose from a variety of different tearsheet patterns',
+      },
+    ],
+  });
   const answers = {
     pattern: await select({
       message: 'Select a data table pattern',
-      choices: reactExamples,
+      choices: patternType === DATA_TABLE ? reactExamples : tearsheetPatterns,
     }),
     installDeps: await confirm({ message: 'Install required dependencies?' }),
     customPath: await input({
@@ -43,7 +59,9 @@ const runPrompt = async () => {
 
   const { pattern, customPath, installDeps, type } = answers;
 
-  const { url } = reactExamples.find((e) => e.value === pattern)!;
+  const chosenPatterns =
+    patternType === DATA_TABLE ? reactExamples : tearsheetPatterns;
+  const { url } = chosenPatterns.find((e) => e.value === pattern)!;
 
   const finalDestination =
     typeof customPath === 'string' && customPath.length > 0
