@@ -12,10 +12,14 @@ export const runPackageManagerInstall = (
   if (typeof inlineDepList === 'string' && inlineDepList.length) {
     console.log('Installing dependencies from inline pattern 🪄');
     // Use NPM if we find a package-lock.json file, otherwise we'll default to yarn
-    execSync(foundPackageLock ? npmInstallScript : yarnAddScript, {
-      encoding: 'utf-8',
-    });
-    console.log('Inline example created, with all necessary dependencies ✅');
-    successMessage(type);
+    try {
+      execSync(foundPackageLock ? npmInstallScript : yarnAddScript, {
+        encoding: 'utf-8',
+      });
+      console.log('Inline example created, with all necessary dependencies ✅');
+      successMessage(type);
+    } catch (error) {
+      console.log('Error installing dependencies', error);
+    }
   }
 };
