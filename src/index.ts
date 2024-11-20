@@ -7,8 +7,6 @@ import { execSync } from 'child_process';
 import { readdir } from 'node:fs/promises';
 import path from 'path';
 
-import { isExternalImport } from './utils/isExternalImport';
-import { getImports } from './utils/getImports';
 import { reactExamples } from './tanstack-react-list';
 import { installDependencies } from './utils/installDependencies';
 import { INLINE, FULL } from './constants';
@@ -108,26 +106,26 @@ const runPrompt = async () => {
   const readExampleImports = async () => {
     console.log('Finding dependencies to install 🔎');
     const fileList = await readdir(finalDestination, { recursive: true });
-    const tsFiles = [];
-    const jsFiles = [];
+    const allJSAndTSFiles = [];
     const allImports = [];
-    // const allJSAndTSFiles = [] as string[];
     const styleFiles = [] as string[];
     for (const file of fileList) {
       const name = `${finalDestination}/${file}`;
-      if (path.extname(name) === '.tsx' || path.extname(name) === '.ts') {
-        tsFiles.push(name);
-      }
-      if (path.extname(name) === '.jsx' || path.extname(name) === '.js') {
-        jsFiles.push(name);
+      if (
+        path.extname(name) === '.tsx' ||
+        path.extname(name) === '.ts' ||
+        path.extname(name) === '.jsx' ||
+        path.extname(name) === '.js'
+      ) {
+        allJSAndTSFiles.push(name);
       }
       if (path.extname(name) === '.scss' || path.extname(name) === '.css') {
         styleFiles.push(name);
       }
     }
 
-    if (jsFiles.length > 0) {
-      jsFiles.forEach((filePath) => {
+    if (allJSAndTSFiles.length > 0) {
+      allJSAndTSFiles.forEach((filePath) => {
         execSync(
           `npx tsc --jsx react --noCheck ${filePath} --outDir ${finalDestination}/temp --target esnext --module esnext --allowJs`,
           {
@@ -141,25 +139,6 @@ const runPrompt = async () => {
       allImports.push(importsFromJsFiles);
     }
 
-    if (tsFiles.length > 0) {
-      const foundExternalPackages = [] as string[];
-      // Gets imports for each js/ts file
-      tsFiles.forEach((filePath) => {
-        const fileImports = getImports(filePath, tsHost);
-        if (fileImports.length > 0) {
-          fileImports.map((i) => {
-            // Checks if import is from an external package
-            if (isExternalImport(filePath, i, tsHost)) {
-              foundExternalPackages.push(i);
-            }
-          });
-        }
-      });
-      const uniquePackages = [...new Set(foundExternalPackages)].filter(
-        (d) => d !== '@carbon/react/icons'
-      );
-      allImports.push(uniquePackages);
-    }
     return installDependencies(allImports.flat(), finalDestination, type);
   };
 
