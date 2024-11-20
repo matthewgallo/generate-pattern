@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/matthewgallo/generate-pattern/compare/v1.17.0...v1.18.0) (2024-11-20)
+
+
+### Bug Fixes
+
+* revert back to parse-imports for both ts and js files ([b9057a5](https://github.com/matthewgallo/generate-pattern/commit/b9057a54983f50b4f2a89d8fd336d0cb5a1470f3))
+
 # [1.17.0](https://github.com/matthewgallo/generate-pattern/compare/v1.16.0...v1.17.0) (2024-11-20)
 
 
