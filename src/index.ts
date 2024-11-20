@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import ts from 'typescript';
 import tiged from 'tiged';
 import { select, confirm, input } from '@inquirer/prompts';
 import { execSync } from 'child_process';
@@ -12,20 +11,6 @@ import { installDependencies } from './utils/installDependencies';
 import { INLINE, FULL } from './constants';
 import { successMessage } from './utils/successMessage';
 import { readTempJSFileImports } from './utils/readTempJSFileImports';
-
-const tsHost = ts.createCompilerHost(
-  {
-    allowJs: true,
-    noEmit: true,
-    isolatedModules: true,
-    resolveJsonModule: false,
-    moduleResolution: ts.ModuleResolutionKind.Classic, // we don't want node_modules
-    incremental: true,
-    noLib: true,
-    noResolve: true,
-  },
-  true
-);
 
 const runPrompt = async () => {
   const answers = {
