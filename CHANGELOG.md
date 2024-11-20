@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/matthewgallo/generate-pattern/compare/v1.16.0...v1.17.0) (2024-11-20)
+
+
+### Bug Fixes
+
+* update unresolvable list ([ad77e40](https://github.com/matthewgallo/generate-pattern/commit/ad77e40541b189393db69e4bef53602f21e2a393))
+
 # [1.16.0](https://github.com/matthewgallo/generate-pattern/compare/v1.15.0...v1.16.0) (2024-11-20)
 
 
