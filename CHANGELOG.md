@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/matthewgallo/generate-pattern/compare/v1.19.0...v1.20.0) (2024-11-20)
+
+
+### Features
+
+* add support for more patterns ([0d360db](https://github.com/matthewgallo/generate-pattern/commit/0d360db36dd004da44f338f5a859f035058a64b0))
+
 # [1.19.0](https://github.com/matthewgallo/generate-pattern/compare/v1.18.0...v1.19.0) (2024-11-20)
 
 # [1.18.0](https://github.com/matthewgallo/generate-pattern/compare/v1.17.0...v1.18.0) (2024-11-20)
