@@ -1,12 +1,19 @@
 #!/usr/bin/env node
 
+/**
+ * Copyright IBM Corp. 2024, 2024
+ *
+ * This source code is licensed under the Apache-2.0 license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import tiged from 'tiged';
 import { select, confirm, input } from '@inquirer/prompts';
 import { execSync } from 'child_process';
 import { readdir } from 'node:fs/promises';
 import path from 'path';
 
-import { reactExamples } from './tanstack-react-list';
+import { reactTableExamples } from './tanstack-react-list';
 import { installDependencies } from './utils/installDependencies';
 import { INLINE, FULL, DATA_TABLE, TEARSHEET } from './constants';
 import { successMessage } from './utils/successMessage';
@@ -32,7 +39,8 @@ const runPrompt = async () => {
   const answers = {
     pattern: await select({
       message: 'Select a data table pattern',
-      choices: patternType === DATA_TABLE ? reactExamples : tearsheetPatterns,
+      choices:
+        patternType === DATA_TABLE ? reactTableExamples : tearsheetPatterns,
     }),
     installDeps: await confirm({ message: 'Install required dependencies?' }),
     customPath: await input({
@@ -60,7 +68,7 @@ const runPrompt = async () => {
   const { pattern, customPath, installDeps, type } = answers;
 
   const chosenPatterns =
-    patternType === DATA_TABLE ? reactExamples : tearsheetPatterns;
+    patternType === DATA_TABLE ? reactTableExamples : tearsheetPatterns;
   const { url } = chosenPatterns.find((e) => e.value === pattern)!;
 
   const finalDestination =
