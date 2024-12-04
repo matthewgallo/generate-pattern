@@ -1,3 +1,5 @@
+# [1.24.0](https://github.com/carbon-design-system/generate-pattern/compare/v1.23.0...v1.24.0) (2024-12-04)
+
 # [1.23.0](https://github.com/carbon-design-system/generate-pattern/compare/v1.22.0...v1.23.0) (2024-12-04)
 
 
