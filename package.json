@@ -1,11 +1,11 @@
 {
-  "name": "generate-pattern",
+  "name": "@carbon/generate-pattern",
   "version": "1.21.0",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "type": "module",
   "repository": {
-    "url": "git+https://github.com/matthewgallo/generate-pattern.git"
+    "url": "git+https://github.com/carbon-design-system/generate-pattern.git"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

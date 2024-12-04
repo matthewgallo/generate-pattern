@@ -38,7 +38,7 @@ const runPrompt = async () => {
   const chosenPatternList = patternList.find((p) => p.type === patternType);
   const answers = {
     pattern: await select({
-      message: 'Select a data table pattern',
+      message: `Select a ${patternType} pattern`,
       choices: chosenPatternList.list,
     }),
     installDeps: await confirm({ message: 'Install required dependencies?' }),
