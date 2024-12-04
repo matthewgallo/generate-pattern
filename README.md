@@ -1,8 +1,8 @@
-# Carbon `@tanstack/table` generator
+# Carbon pattern code generator
 
-This is a CLI tool used to generate example code from pre-existing Vite templates from a monorepo to demonstrate how to use `@carbon/react` and `@tanstack/table` together. You can choose to either generate a full Vite application or to generate an inline example within an existing application.
+This is a CLI tool used to generate example code for identified patterns within the Carbon Design System.
 
-However, this package could be used more generically to scaffold example code.
+The majority of the current examples are created from pre-existing Vite templates from a monorepo to demonstrate how to use `@carbon/react` and `@tanstack/react-table` together. You can choose to either generate a full Vite application or to generate an inline example within an existing application.
 
 ## Usage
 

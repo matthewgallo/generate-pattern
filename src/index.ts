@@ -13,12 +13,11 @@ import { execSync } from 'child_process';
 import { readdir } from 'node:fs/promises';
 import path from 'path';
 
-import { reactTableExamples } from './tanstack-react-list';
+import { patternList } from './patternList';
 import { installDependencies } from './utils/installDependencies';
 import { INLINE, FULL, DATA_TABLE, TEARSHEET } from './constants';
 import { successMessage } from './utils/successMessage';
 import { readTempJSFileImports } from './utils/readTempJSFileImports';
-import { tearsheetPatterns } from './tearsheet-patterns';
 
 const runPrompt = async () => {
   const patternType = await select({
@@ -36,11 +35,11 @@ const runPrompt = async () => {
       },
     ],
   });
+  const chosenPatternList = patternList.find((p) => p.type === patternType);
   const answers = {
     pattern: await select({
       message: 'Select a data table pattern',
-      choices:
-        patternType === DATA_TABLE ? reactTableExamples : tearsheetPatterns,
+      choices: chosenPatternList.list,
     }),
     installDeps: await confirm({ message: 'Install required dependencies?' }),
     customPath: await input({
@@ -67,8 +66,7 @@ const runPrompt = async () => {
 
   const { pattern, customPath, installDeps, type } = answers;
 
-  const chosenPatterns =
-    patternType === DATA_TABLE ? reactTableExamples : tearsheetPatterns;
+  const chosenPatterns = chosenPatternList.list;
   const { url } = chosenPatterns.find((e) => e.value === pattern)!;
 
   const finalDestination =
