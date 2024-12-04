@@ -7,7 +7,7 @@ The majority of the current examples are created from pre-existing Vite template
 ## Usage
 
 ```bash
-npx generate-pattern
+npx @carbon/generate-pattern
 ```
 
 1. Select a pattern
