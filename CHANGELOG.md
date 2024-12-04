@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/carbon-design-system/generate-pattern/compare/v1.22.0...v1.23.0) (2024-12-04)
+
+
+### Bug Fixes
+
+* use correct pattern type in prompt, change package name ([b2c0ed6](https://github.com/carbon-design-system/generate-pattern/commit/b2c0ed6483c3efe67821aa4429ae895f807eff48))
+
 # [1.22.0](https://github.com/matthewgallo/generate-pattern/compare/v1.21.0...v1.22.0) (2024-12-04)
 
 # [1.21.0](https://github.com/matthewgallo/generate-pattern/compare/v1.20.0...v1.21.0) (2024-12-02)
